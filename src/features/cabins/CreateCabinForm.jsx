@@ -14,7 +14,6 @@ function CreateCabinForm({ cabinToEdit = {} }) {
   const { isUpdating, updateCabin } = useUpdateCabin();
 
   const isPending = isCreating || isUpdating;
-
   const { id: editId, ...editValues } = cabinToEdit;
   const isCabinToUpdate = Boolean(editId); // if id exists will be true
   const { register, handleSubmit, getValues, reset } = useForm({
