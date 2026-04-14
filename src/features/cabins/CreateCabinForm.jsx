@@ -1,4 +1,3 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import Form from "../../ui/Form";
@@ -7,52 +6,35 @@ import Input from "../../ui/Input";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import Button from "../../ui/Button";
-import { createOrUpdateCabin } from "../../services/apiCabins";
+import { useCreateCabin } from "./hooks/useCreateCabin";
+import { useUpdateCabin } from "./hooks/useUpdateCabin";
 
 function CreateCabinForm({ cabinToEdit = {} }) {
-  const { id: editId, ...editValues } = cabinToEdit;
-  const isCabinToUpdate = Boolean(editId); // if id exists true
-  const { register, handleSubmit, reset, getValues } = useForm({
-    defaultValues: isCabinToUpdate ? editValues : {},
-  });
-  const queryClient = useQueryClient();
-  // CREATE CABIN
-  const { mutate: createCabin, isPending: isCreating } = useMutation({
-    mutationFn: (newCabin) => createOrUpdateCabin(newCabin),
-    onSuccess: (newCabin) => {
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      reset();
-      toast.success(`Cabin ${newCabin.name} has been created successfuly`);
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
-
-  // UPDATE CABIN
-  const { mutate: updateCabin, isPending: isUpdating } = useMutation({
-    mutationFn: ({ updatedCabin, editId }) =>
-      createOrUpdateCabin(updatedCabin, editId),
-    onSuccess: (newCabin) => {
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      // reset();
-      toast.success(`Cabin ${newCabin.name} has been updated successfuly`);
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
+  const { isCreating, createCabin } = useCreateCabin();
+  const { isUpdating, updateCabin } = useUpdateCabin();
 
   const isPending = isCreating || isUpdating;
+
+  const { id: editId, ...editValues } = cabinToEdit;
+  const isCabinToUpdate = Boolean(editId); // if id exists will be true
+  const { register, handleSubmit, getValues, reset } = useForm({
+    defaultValues: isCabinToUpdate ? editValues : {},
+  });
 
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
 
-    if (!isCabinToUpdate) createCabin({ ...data, image });
+    // A) Create new Cabin
+    if (!isCabinToUpdate)
+      createCabin(
+        { ...data, image },
+        // this onSuccess come from mutate function
+        {
+          onSuccess: () => reset(),
+        },
+      );
+
+    // B) Update Cabin
     if (isCabinToUpdate)
       updateCabin({ updatedCabin: { ...data, image }, editId });
   }
@@ -137,7 +119,6 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           {...register("description", {
             required: "Description is required",
           })}
-          disabled={isPending}
         />
       </FormRow>
       <FormRow label={"Cabin photo"}>

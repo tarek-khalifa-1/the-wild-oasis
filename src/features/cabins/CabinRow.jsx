@@ -1,12 +1,9 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { deleteCabin } from "../../services/apiCabins";
 import Button from "../../ui/Button";
-import toast from "react-hot-toast";
-import Spinner from "../../ui/Spinner";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
+import { useDeleteCabin } from "./hooks/useDeleteCabin";
 
 const TableRow = styled.div`
   display: grid;
@@ -52,18 +49,7 @@ const Discount = styled.div`
 function CabinRow({ cabin }) {
   const [showForm, setShowForm] = useState(false);
   const { id, name, maxCapacity, regularPrice, discount, image } = cabin;
-  const queryClient = useQueryClient();
-  const { isPending, mutate } = useMutation({
-    mutationFn: deleteCabin,
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      toast.success(`Cabin ${name} has been deleted successfully`);
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  const { isDeleting, deleteCabin } = useDeleteCabin();
 
   return (
     <>
@@ -72,15 +58,19 @@ function CabinRow({ cabin }) {
         <Cabin>{name}</Cabin>
         <MaxCapacity>Fits up to {maxCapacity}</MaxCapacity>
         <Price>{formatCurrency(regularPrice)}</Price>
-        <Discount>{formatCurrency(discount)}</Discount>
+        {discount ? (
+          <Discount>{formatCurrency(discount)}</Discount>
+        ) : (
+          <span>&mdash;</span>
+        )}
         <div>
           <Button onClick={() => setShowForm((show) => !show)}>Edit</Button>
           <Button
             $variation="danger"
-            onClick={() => mutate(id)}
-            disabled={isPending}
+            onClick={() => deleteCabin(id)}
+            disabled={isDeleting}
           >
-            {isPending ? "Deleting" : "Delete"}
+            {isDeleting ? "Deleting" : "Delete"}
           </Button>
         </div>
       </TableRow>
