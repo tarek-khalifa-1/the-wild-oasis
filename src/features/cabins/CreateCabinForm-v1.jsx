@@ -1,60 +1,35 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import Form from "../../ui/Form";
-import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
+import Form from "../../ui/Form";
+import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
-import Button from "../../ui/Button";
-import { createOrUpdateCabin } from "../../services/apiCabins";
+import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addCabin } from "../../services/apiCabins";
+import toast from "react-hot-toast";
+import FormRow from "../../ui/FormRow";
 
-function CreateCabinForm({ cabinToEdit = {} }) {
-  const { id: editId, ...editValues } = cabinToEdit;
-  const isCabinToUpdate = Boolean(editId); // if id exists true
-  const { register, handleSubmit, reset, getValues } = useForm({
-    defaultValues: isCabinToUpdate ? editValues : {},
-  });
+function CreateCabinForm() {
+  const { register, handleSubmit, reset, getValues } = useForm();
+
   const queryClient = useQueryClient();
-  // CREATE CABIN
-  const { mutate: createCabin, isPending: isCreating } = useMutation({
-    mutationFn: (newCabin) => createOrUpdateCabin(newCabin),
+  const { mutate, isPending } = useMutation({
+    mutationFn: addCabin,
     onSuccess: (newCabin) => {
       queryClient.invalidateQueries({
         queryKey: ["cabins"],
       });
-      reset();
-      toast.success(`Cabin ${newCabin.name} has been created successfuly`);
+
+      toast.success(`Cabin ${newCabin.name} has been added successfuly`);
     },
     onError: (err) => {
       toast.error(err.message);
     },
   });
-
-  // UPDATE CABIN
-  const { mutate: updateCabin, isPending: isUpdating } = useMutation({
-    mutationFn: ({ updatedCabin, editId }) =>
-      createOrUpdateCabin(updatedCabin, editId),
-    onSuccess: (newCabin) => {
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      // reset();
-      toast.success(`Cabin ${newCabin.name} has been updated successfuly`);
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
-
-  const isPending = isCreating || isUpdating;
 
   function onSubmit(data) {
-    const image = typeof data.image === "string" ? data.image : data.image[0];
-
-    if (!isCabinToUpdate) createCabin({ ...data, image });
-    if (isCabinToUpdate)
-      updateCabin({ updatedCabin: { ...data, image }, editId });
+    mutate({ ...data, image: data.image[0] });
+    reset();
   }
 
   function onError(errors) {
@@ -145,7 +120,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           id="image"
           accept="image/*"
           {...register("image", {
-            required: isCabinToUpdate ? false : "Image is required",
+            required: "Image is required",
           })}
           disabled={isPending}
         />
@@ -153,15 +128,15 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
       <FormRow>
         <Button
-          type="reset"
           $size="medium"
           $variation="secondary"
+          type="reset"
           disabled={isPending}
         >
           Cancel
         </Button>
         <Button $size="medium" $variation="primary" disabled={isPending}>
-          {isCabinToUpdate ? "Update" : "Create new"} cabin
+          Add cabin
         </Button>
       </FormRow>
     </Form>
