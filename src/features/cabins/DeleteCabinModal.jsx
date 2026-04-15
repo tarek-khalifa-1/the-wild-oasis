@@ -2,10 +2,9 @@ import { useDeleteCabin } from "./hooks/useDeleteCabin";
 import Modal from "../../ui/Modal";
 import Button from "../../ui/Button";
 import { HiTrash } from "react-icons/hi2";
-import ConfirmDelete from "../../ui/ConfirmDelete";
+import Confirm from "../../ui/Confirm";
 
-function DeleteCabinModal({ cabin }) {
-  const { id, name } = cabin;
+function DeleteCabinModal({ id }) {
   const { isDeleting, deleteCabin } = useDeleteCabin();
 
   return (
@@ -17,11 +16,7 @@ function DeleteCabinModal({ cabin }) {
       </Modal.Open>
 
       <Modal.Window name="confirm-delete">
-        <ConfirmDelete
-          resourceName={`Cabin ${name}`}
-          disabled={isDeleting}
-          onConfirm={() => deleteCabin(id)}
-        />
+        <Confirm disabled={isDeleting} onConfirm={() => deleteCabin(id)} />
       </Modal.Window>
     </Modal>
   );

@@ -75,7 +75,7 @@ function CabinRow({ cabin }) {
           <HiSquare2Stack />
         </Button>
         <EditCabinModal cabin={cabin} />
-        <DeleteCabinModal cabin={cabin} />
+        <DeleteCabinModal id={cabin.id} />
       </div>
     </TableRow>
   );

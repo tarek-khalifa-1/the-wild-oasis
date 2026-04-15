@@ -7,12 +7,13 @@ import { useUpdateSetting } from "./hooks/useUpdateSetting";
 import Button from "../../ui/Button";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
-import Row from "../../ui/Row";
+import Modal from "../../ui/Modal";
+import Confirm from "../../ui/Confirm";
 
 function UpdateSettingsForm() {
   const { isLoading, settings } = useSettings();
 
-  const { isUpdating, updateSetting } = useUpdateSetting();
+  const { isUpdating, updateSetting, closeModal } = useUpdateSetting();
 
   const { register, reset } = useForm({
     defaultValues: settings,
@@ -31,8 +32,6 @@ function UpdateSettingsForm() {
   }
 
   function handleReset() {
-    const confirm = window.confirm("Are you sure want to reset settings");
-    if (!confirm) return;
     const defaultValues = {
       minBookingLength: 3,
       maxBookingLength: 90,
@@ -85,15 +84,21 @@ function UpdateSettingsForm() {
         />
       </FormRow>
       <div style={{ marginTop: "3rem" }}>
-        <Button
-          type="button"
-          onClick={handleReset}
-          disabled={isUpdating}
-          $variation="primary"
-          $size="medium"
-        >
-          Reset to default settings
-        </Button>
+        <Modal>
+          <Modal.Open opens="reset-settings">
+            <Button type="button" $variation="primary" $size="medium">
+              Reset to default settings
+            </Button>
+          </Modal.Open>
+
+          <Modal.Window name="reset-settings">
+            <Confirm
+              onConfirm={handleReset}
+              disabled={isUpdating}
+              closeModal={closeModal}
+            />
+          </Modal.Window>
+        </Modal>
       </div>
     </Form>
   );
