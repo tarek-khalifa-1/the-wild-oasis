@@ -9,7 +9,7 @@ import Button from "../../ui/Button";
 import { useCreateCabin } from "./hooks/useCreateCabin";
 import { useUpdateCabin } from "./hooks/useUpdateCabin";
 
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   const { isCreating, createCabin } = useCreateCabin();
   const { isUpdating, updateCabin } = useUpdateCabin();
 
@@ -29,13 +29,19 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         { ...data, image },
         // this onSuccess come from mutate function
         {
-          onSuccess: () => reset(),
+          onSuccess: () => {
+            reset();
+            onCloseModal?.();
+          },
         },
       );
 
     // B) Update Cabin
     if (isCabinToUpdate)
-      updateCabin({ updatedCabin: { ...data, image }, editId });
+      updateCabin(
+        { updatedCabin: { ...data, image }, editId },
+        { onSuccess: () => onCloseModal?.() },
+      );
   }
 
   function onError(errors) {
@@ -44,7 +50,10 @@ function CreateCabinForm({ cabinToEdit = {} }) {
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={onCloseModal ? "modalForm" : "regularForm"}
+    >
       <FormRow label={"Cabin name"}>
         <Input
           id="name"
@@ -137,6 +146,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
           $size="medium"
           $variation="secondary"
           disabled={isPending}
+          onClick={() => onCloseModal?.()}
         >
           Cancel
         </Button>

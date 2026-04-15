@@ -1,12 +1,11 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import Button from "../../ui/Button";
-import { useState } from "react";
-import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteCabin } from "./hooks/useDeleteCabin";
-import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
-import { createOrUpdateCabin } from "../../services/apiCabins";
+import { HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import { useCreateCabin } from "./hooks/useCreateCabin";
+import EditCabinModal from "./EditCabinModal";
+import DeleteCabinModal from "./DeleteCabinModal";
 
 const TableRow = styled.div`
   display: grid;
@@ -50,12 +49,10 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const [showForm, setShowForm] = useState(false);
-  const { id, name, maxCapacity, regularPrice, discount, describtion, image } =
+  const { name, maxCapacity, regularPrice, discount, describtion, image } =
     cabin;
 
   const { isCreating, createCabin } = useCreateCabin();
-  const { isDeleting, deleteCabin } = useDeleteCabin();
 
   function handleDuplicate() {
     const { id, ...cabinDataWithoutID } = cabin;
@@ -63,32 +60,24 @@ function CabinRow({ cabin }) {
   }
 
   return (
-    <>
-      <TableRow role="row">
-        <Img src={image} />
-        <Cabin>{name}</Cabin>
-        <MaxCapacity>Fits up to {maxCapacity}</MaxCapacity>
-        <Price>{formatCurrency(regularPrice)}</Price>
-        {discount ? (
-          <Discount>{formatCurrency(discount)}</Discount>
-        ) : (
-          <span>&mdash;</span>
-        )}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <Button onClick={handleDuplicate} disabled={isCreating}>
-            <HiSquare2Stack />
-          </Button>
-          <Button onClick={() => setShowForm((show) => !show)}>
-            <HiPencil />
-          </Button>
-
-          <Button onClick={() => deleteCabin(id)} disabled={isDeleting}>
-            <HiTrash />
-          </Button>
-        </div>
-      </TableRow>
-      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
-    </>
+    <TableRow role="row">
+      <Img src={image} />
+      <Cabin>{name}</Cabin>
+      <MaxCapacity>Fits up to {maxCapacity}</MaxCapacity>
+      <Price>{formatCurrency(regularPrice)}</Price>
+      {discount ? (
+        <Discount>{formatCurrency(discount)}</Discount>
+      ) : (
+        <span>&mdash;</span>
+      )}
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        <Button onClick={handleDuplicate} disabled={isCreating}>
+          <HiSquare2Stack />
+        </Button>
+        <EditCabinModal cabin={cabin} />
+        <DeleteCabinModal cabin={cabin} />
+      </div>
+    </TableRow>
   );
 }
 
