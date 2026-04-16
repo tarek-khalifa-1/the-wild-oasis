@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import Header from "./Header";
 import Sidebar from "./Sidebar";
+import Header from "./Header";
 import styled from "styled-components";
 
 const StyledAppLayout = styled.div`
@@ -17,7 +17,7 @@ const Main = styled.main`
 `;
 
 const Container = styled.div`
-  max-width: 90%;
+  max-width: 120rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
