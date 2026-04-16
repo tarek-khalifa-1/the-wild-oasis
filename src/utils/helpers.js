@@ -27,3 +27,26 @@ export const formatCurrency = (value) =>
   new Intl.NumberFormat("en", { style: "currency", currency: "USD" }).format(
     value,
   );
+
+export const sortByFn = (field, order = "asc") => {
+  return (a, b) => {
+    let valA = a[field];
+    let valB = b[field];
+
+    // Handle strings (case-insensitive)
+    if (typeof valA === "string" && typeof valB === "string") {
+      valA = valA.toLowerCase();
+      valB = valB.toLowerCase();
+    }
+
+    // Handle dates
+    if (field === "created_at") {
+      valA = new Date(valA);
+      valB = new Date(valB);
+    }
+
+    if (valA < valB) return order === "asc" ? -1 : 1;
+    if (valA > valB) return order === "asc" ? 1 : -1;
+    return 0;
+  };
+};

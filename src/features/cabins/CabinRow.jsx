@@ -1,15 +1,7 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import Button from "../../ui/Button";
-import { HiMiniSquare2Stack, HiPencil, HiTrash } from "react-icons/hi2";
-import { useCreateCabin } from "./hooks/useCreateCabin";
 import Table from "../../ui/Table";
-import Modal from "../../ui/Modal";
-import Menus from "../../ui/Menus";
-import CreateCabinForm from "./CreateCabinForm";
-import Confirm from "../../ui/Confirm";
-import DeleteCabinModal from "./DeleteCabinModal";
-import UpdateCabinModal from "./UpdateCabinModal";
+import CabinOperations from "./CabinOperations";
 
 const TableRow = styled.div`
   display: grid;
@@ -53,20 +45,7 @@ const Discount = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const {
-    id: cabinId,
-    name,
-    maxCapacity,
-    regularPrice,
-    discount,
-    image,
-  } = cabin;
-
-  const { createCabin } = useCreateCabin();
-  function handleDuplicate() {
-    const { id, ...cabinDataWithoutID } = cabin;
-    createCabin({ ...cabinDataWithoutID, name: `copy of ${name}` });
-  }
+  const { name, maxCapacity, regularPrice, discount, image } = cabin;
 
   return (
     <Table.Row>
@@ -79,32 +58,8 @@ function CabinRow({ cabin }) {
       ) : (
         <span>&mdash;</span>
       )}
-      <div>
-        <Modal>
-          <Menus.Menu>
-            <Menus.Toggle id={cabinId} />
-            <Menus.List id={cabinId}>
-              <Menus.Button
-                icon={<HiMiniSquare2Stack />}
-                onClick={handleDuplicate}
-              >
-                Duplicate
-              </Menus.Button>
 
-              <Modal.Open opens="cabin-update-form">
-                <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
-              </Modal.Open>
-
-              <Modal.Open opens="cabin-confirm-delete">
-                <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
-              </Modal.Open>
-            </Menus.List>
-
-            <UpdateCabinModal cabin={cabin} />
-            <DeleteCabinModal id={cabin.id} />
-          </Menus.Menu>
-        </Modal>
-      </div>
+      <CabinOperations cabin={cabin} />
     </Table.Row>
   );
 }
