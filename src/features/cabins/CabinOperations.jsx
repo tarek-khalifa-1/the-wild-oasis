@@ -7,9 +7,14 @@ import DeleteCabinModal from "./DeleteCabinModal";
 
 function CabinOperations({ cabin }) {
   const { createCabin } = useCreateCabin();
+
   function handleDuplicate() {
     const { id, ...cabinDataWithoutID } = cabin;
-    createCabin({ ...cabinDataWithoutID, name: `copy of ${cabin.name}` });
+    createCabin({
+      ...cabinDataWithoutID,
+      name: `copy of ${cabin.name}`,
+      created_at: new Date(),
+    });
   }
   return (
     <Modal>
