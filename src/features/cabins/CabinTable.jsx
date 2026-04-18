@@ -5,6 +5,7 @@ import Menus from "../../ui/Menus";
 import Table from "../../ui/Table";
 import { useSearchParams } from "react-router-dom";
 import { sortByFn } from "../../utils/helpers";
+import Empty from "../../ui/Empty";
 
 function CabinTable() {
   // get cabins data
@@ -14,6 +15,8 @@ function CabinTable() {
 
   // Loading Spinner unitl get data of cabins
   if (isLoading) return <Spinner />;
+  // if no data found
+  if (!cabins.length) return <Empty resourceName={"Cabins"} />;
 
   // 1) FILTER
   // filter cabins by discount

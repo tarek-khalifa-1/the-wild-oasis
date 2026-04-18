@@ -1,9 +1,22 @@
 import BookingRow from "./BookingRow";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
+import Spinner from "../../ui/Spinner";
+import Empty from "../../ui/Empty";
+import { useBookings } from "./hooks/useBookings";
+import Pagination from "../../ui/Pagination";
+
+import { useSafePage } from "../../hooks/useSafePage";
 
 function BookingTable() {
-  const bookings = [];
+  const { isLoading, safePage, bookings, count } = useBookings();
+  useSafePage(safePage);
+
+  // Loading Spinner unitl get data of cabins
+  if (isLoading) return <Spinner />;
+
+  // if no data found
+  if (!bookings?.length) return <Empty resourceName={"Bookings"} />;
 
   return (
     <Menus>
@@ -23,6 +36,9 @@ function BookingTable() {
             <BookingRow key={booking.id} booking={booking} />
           )}
         />
+        <Table.Footer>
+          <Pagination count={count} />
+        </Table.Footer>
       </Table>
     </Menus>
   );

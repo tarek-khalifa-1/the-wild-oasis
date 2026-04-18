@@ -7,6 +7,7 @@ import { subtractDates } from "../utils/helpers";
 import { bookings } from "./data-bookings";
 import { cabins } from "./data-cabins";
 import { guests } from "./data-guests";
+import toast from "react-hot-toast";
 
 // const originalSettings = {
 //   minBookingLength: 3,
@@ -94,8 +95,6 @@ async function createBookings() {
     };
   });
 
-  console.log(finalBookings);
-
   const { error } = await supabase.from("bookings").insert(finalBookings);
   if (error) console.log(error.message);
 }
@@ -116,6 +115,7 @@ function Uploader() {
     await createBookings();
 
     setIsLoading(false);
+    toast.success("Data has been uploaded successfully");
   }
 
   async function uploadBookings() {
@@ -123,6 +123,7 @@ function Uploader() {
     await deleteBookings();
     await createBookings();
     setIsLoading(false);
+    toast.success("Data has been uploaded successfully");
   }
 
   return (
@@ -140,11 +141,21 @@ function Uploader() {
     >
       <h3>SAMPLE DATA</h3>
 
-      <Button onClick={uploadAll} disabled={isLoading}>
+      <Button
+        $variation="primary"
+        $size="medium"
+        onClick={uploadAll}
+        disabled={isLoading}
+      >
         Upload ALL
       </Button>
 
-      <Button onClick={uploadBookings} disabled={isLoading}>
+      <Button
+        $variation="primary"
+        $size="medium"
+        onClick={uploadBookings}
+        disabled={isLoading}
+      >
         Upload bookings ONLY
       </Button>
     </div>
