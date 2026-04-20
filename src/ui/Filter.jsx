@@ -41,6 +41,7 @@ function Filter({ filterBy, filterOptions }) {
 
   function handleClick(value) {
     searchParams.set(filterBy, value);
+    if (searchParams.get("page")) searchParams.set("page", 1); //when click on filter should reset to page 1
     setSearchParams(searchParams);
   }
 

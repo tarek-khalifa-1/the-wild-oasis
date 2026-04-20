@@ -28,7 +28,7 @@ export function useBookings() {
   const {
     isLoading,
     error,
-    data: { data: bookings, count, page: safePage } = {},
+    data: { data: bookings, count } = {},
   } = useQuery({
     queryKey: ["bookings", filter, sortBy, currentPage],
     queryFn: () => getBookings({ filter, sortBy, currentPage }),
@@ -51,5 +51,5 @@ export function useBookings() {
     });
   }
 
-  return { isLoading, error, bookings, count, safePage };
+  return { isLoading, error, bookings, count };
 }

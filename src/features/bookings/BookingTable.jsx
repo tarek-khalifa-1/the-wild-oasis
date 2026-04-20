@@ -6,11 +6,8 @@ import Empty from "../../ui/Empty";
 import { useBookings } from "./hooks/useBookings";
 import Pagination from "../../ui/Pagination";
 
-import { useSafePage } from "../../hooks/useSafePage";
-
 function BookingTable() {
-  const { isLoading, safePage, bookings, count } = useBookings();
-  useSafePage(safePage);
+  const { isLoading, bookings, count } = useBookings();
 
   // Loading Spinner unitl get data of cabins
   if (isLoading) return <Spinner />;

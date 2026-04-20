@@ -9,6 +9,14 @@ import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
+import { useBooking } from "./hooks/useBooking";
+import Spinner from "../../ui/Spinner";
+import { useNavigate } from "react-router-dom";
+import { HiArrowUpOnSquare } from "react-icons/hi2";
+import { useCheckout } from "./hooks/useCheckout";
+import Modal from "../../ui/Modal";
+import Confirm from "../../ui/Confirm";
+import { useDeleteBooking } from "./hooks/useDeleteBooking";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -17,11 +25,14 @@ const HeadingGroup = styled.div`
 `;
 
 function BookingDetail() {
-  const booking = {};
-  const status = "checked-in";
-
+  const { isLoading, booking } = useBooking();
+  const { isCheckingOut, checkOut } = useCheckout();
+  const { isDeleting, deleteBooking } = useDeleteBooking();
   const moveBack = useMoveBack();
+  const navigate = useNavigate();
+  if (isLoading) return <Spinner />;
 
+  const { status, id: bookingId } = booking;
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
@@ -32,7 +43,7 @@ function BookingDetail() {
     <>
       <Row type="horizontal">
         <HeadingGroup>
-          <Heading as="h1">Booking #X</Heading>
+          <Heading as="h1">Booking #{bookingId}</Heading>
           <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
         </HeadingGroup>
         <ButtonText onClick={moveBack}>&larr; Back</ButtonText>
@@ -41,7 +52,42 @@ function BookingDetail() {
       <BookingDataBox booking={booking} />
 
       <ButtonGroup>
-        <Button variation="secondary" onClick={moveBack}>
+        {status === "unconfirmed" && (
+          <Button
+            $variation="primary"
+            $size="medium"
+            onClick={() => navigate(`/checkin/${bookingId}`)}
+          >
+            Check in
+          </Button>
+        )}
+
+        {status === "checked-in" && (
+          <Button
+            $variation="primary"
+            $size="medium"
+            $icon={<HiArrowUpOnSquare />}
+            disabled={isCheckingOut}
+            onClick={() => checkOut(bookingId)}
+          >
+            Check out
+          </Button>
+        )}
+        <Modal>
+          <Modal.Open opens="booking-delete">
+            <Button $variation="danger" $size="medium" onClick={moveBack}>
+              Delete
+            </Button>
+          </Modal.Open>
+          <Modal.Window name="booking-delete">
+            <Confirm
+              disabled={isDeleting}
+              onConfirm={() => deleteBooking(bookingId)}
+            />
+          </Modal.Window>
+        </Modal>
+
+        <Button $variation="secondary" $size="medium" onClick={moveBack}>
           Back
         </Button>
       </ButtonGroup>
