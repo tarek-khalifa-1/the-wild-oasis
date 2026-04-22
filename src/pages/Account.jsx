@@ -6,15 +6,15 @@ import Row from "../ui/Row";
 function Account() {
   return (
     <>
-      <Heading as="h1">Update your account</Heading>
+      <Heading $as="h1">Update your account</Heading>
 
       <Row $type="vertical">
-        <Heading as="h3">Update user data</Heading>
+        <Heading $as="h3">Update user data</Heading>
         <UpdateUserDataForm />
       </Row>
 
       <Row $type="vertical">
-        <Heading as="h3">Update password</Heading>
+        <Heading $as="h3">Update password</Heading>
         <UpdatePasswordForm />
       </Row>
     </>

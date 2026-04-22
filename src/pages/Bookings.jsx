@@ -10,11 +10,11 @@ import Button from "../ui/Button";
 function Bookings() {
   return (
     <>
-      <Row type="horizontal">
-        <Heading as="h1">All bookings</Heading>
+      <Row $type="horizontal">
+        <Heading $as="h1">All bookings</Heading>
         <BookingTableOperations />
       </Row>
-      <Row type="horizontal">
+      <Row $type="horizontal">
         <AddBookingModal />
       </Row>
       <BookingTable />
