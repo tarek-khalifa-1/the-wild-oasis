@@ -1,20 +1,20 @@
-import { useState } from "react";
 import CreateGuestForm from "../guests/CreateGuestForm";
 import CreateBookingForm from "./CreateBookingForm";
+import { useQuery } from "@tanstack/react-query";
 
 function NewBooking({ onCloseModal }) {
-  const [newGuest, setNewGuest] = useState("");
+  const { data: currentGuest } = useQuery({
+    queryKey: ["guest"],
+    // only read from cache
+    queryFn: () => null,
+    enabled: false,
+  });
 
   return (
     <>
-      {!newGuest && (
-        <CreateGuestForm
-          setNewGuest={setNewGuest}
-          onCloseModal={onCloseModal}
-        />
-      )}
-      {newGuest && (
-        <CreateBookingForm newGuest={newGuest} onCloseModal={onCloseModal} />
+      {!currentGuest && <CreateGuestForm onCloseModal={onCloseModal} />}
+      {currentGuest && (
+        <CreateBookingForm guest={currentGuest} onCloseModal={onCloseModal} />
       )}
     </>
   );

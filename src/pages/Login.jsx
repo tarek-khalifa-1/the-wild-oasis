@@ -1,4 +1,13 @@
 import styled from "styled-components";
+import LoginForm from "../features/authentication/LoginForm";
+import Logo from "../ui/Logo";
+import Heading from "../ui/Heading";
+import { useUser } from "../features/authentication/hooks/useUser";
+import Spinner from "../ui/Spinner";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import CabinTable from "../features/cabins/CabinTable";
+// import LoginForm from "../features/authentication/LoginForm";
 
 const LoginLayout = styled.main`
   min-height: 100vh;
@@ -11,7 +20,22 @@ const LoginLayout = styled.main`
 `;
 
 function Login() {
-  return <LoginLayout>Login</LoginLayout>;
+  const navigate = useNavigate();
+  const { isLoading, isAuth } = useUser();
+
+  useEffect(() => {
+    if (isAuth && !isLoading) return navigate("/");
+  }, [isAuth, isLoading, navigate]);
+
+  if (isLoading) return <Spinner />;
+
+  return (
+    <LoginLayout>
+      <Logo />
+      <Heading as="h4">Log in to your account</Heading>
+      <LoginForm />
+    </LoginLayout>
+  );
 }
 
 export default Login;

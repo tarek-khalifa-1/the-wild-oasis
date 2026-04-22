@@ -6,23 +6,13 @@ import Input from "../../ui/Input";
 import Button from "../../ui/Button";
 import { useCreateGuest } from "./hooks/useCreateGuest";
 
-function CreateGuestForm({ onCloseModal, setNewGuest }) {
+function CreateGuestForm({ onCloseModal }) {
   const { isCreating, createGuest } = useCreateGuest();
   const isPending = isCreating;
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit } = useForm();
 
   function onSubmit(data) {
-    // return console.log(data);
-    createGuest(
-      data,
-      // this onSuccess come from mutate function
-      {
-        onSuccess: (data) => {
-          reset();
-          setNewGuest({ id: data.id, name: data.fullName });
-        },
-      },
-    );
+    createGuest(data);
   }
 
   function onError(errors) {
@@ -43,7 +33,7 @@ function CreateGuestForm({ onCloseModal, setNewGuest }) {
             required: "full name is required",
           })}
           disabled={isPending}
-          value={"Tarek Mohamed"}
+          defaultValue={"Tarek Mohamed"}
         />
       </FormRow>
 
@@ -55,7 +45,7 @@ function CreateGuestForm({ onCloseModal, setNewGuest }) {
             required: "Email is required",
           })}
           disabled={isPending}
-          value={"tarek@yahoo.com"}
+          defaultValue={"tarek@yahoo.com"}
         />
       </FormRow>
 
@@ -68,7 +58,7 @@ function CreateGuestForm({ onCloseModal, setNewGuest }) {
             valueAsNumber: true,
           })}
           disabled={isPending}
-          value={"29651523654"}
+          defaultValue={"29651523654"}
         />
       </FormRow>
 
@@ -80,7 +70,7 @@ function CreateGuestForm({ onCloseModal, setNewGuest }) {
             required: "Nationality is required",
           })}
           disabled={isPending}
-          value={"Egyptian"}
+          defaultValue={"Egyptian"}
         />
       </FormRow>
       <FormRow label={"Country flag"}>
@@ -91,7 +81,7 @@ function CreateGuestForm({ onCloseModal, setNewGuest }) {
             required: "Country flag is required",
           })}
           disabled={isPending}
-          value={"https://flagcdn.com/eg.svg"}
+          defaultValue={"https://flagcdn.com/eg.svg"}
         />
       </FormRow>
 

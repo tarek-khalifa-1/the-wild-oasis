@@ -14,8 +14,9 @@ import Spinner from "../../ui/Spinner";
 import SelectStyle from "../../ui/SelectStyle";
 import { formatCurrency } from "../../utils/helpers";
 import { useSettings } from "../settings/hooks/useSettings";
+import { useQueryClient } from "@tanstack/react-query";
 
-function CreateBookingForm({ newGuest, cabinToEdit = {}, onCloseModal }) {
+function CreateBookingForm({ cabinToEdit = {}, onCloseModal, guest }) {
   const { isCreating, createBooking } = useCreateBooking();
   const { isUpdating, updateCabin } = useUpdateBooking();
   const { isLoading: isLoadingCabins, cabins } = useCabins();
@@ -27,7 +28,7 @@ function CreateBookingForm({ newGuest, cabinToEdit = {}, onCloseModal }) {
   const { register, handleSubmit, reset, setValue, control } = useForm({
     defaultValues: isBookingToUpdate ? editValues : {},
   });
-
+  const queryClient = useQueryClient();
   const startDate = useWatch({ control, name: "startDate" });
   const endDate = useWatch({ control, name: "endDate" });
 
@@ -48,8 +49,7 @@ function CreateBookingForm({ newGuest, cabinToEdit = {}, onCloseModal }) {
 
     let extrasPrice = 0;
     if (data.hasBreakfast) {
-      extrasPrice =
-        settings.breakfastPrice * (data.numGuests + 1) * data.numNights;
+      extrasPrice = settings.breakfastPrice * data.numGuests * data.numNights;
     }
     const totalPrice = selectedCabin.regularPrice + extrasPrice;
     // A) Create new Cabin
@@ -61,13 +61,14 @@ function CreateBookingForm({ newGuest, cabinToEdit = {}, onCloseModal }) {
           extrasPrice,
           totalPrice,
           status: "unconfirmed",
-          guestId: newGuest.id,
+          guestId: guest.id,
         },
         // this onSuccess come from mutate function
         {
           onSuccess: () => {
             reset();
             onCloseModal?.();
+            queryClient.removeQueries({ queryKey: ["guest"] });
           },
         },
       );
@@ -91,7 +92,7 @@ function CreateBookingForm({ newGuest, cabinToEdit = {}, onCloseModal }) {
       type={onCloseModal ? "modalForm" : "regularForm"}
     >
       <FormRow label={"Guest"}>
-        <h3>{newGuest.name}</h3>
+        <h3>{guest?.fullName}</h3>
       </FormRow>
       <FormRow label={"Start Date"}>
         <Input
@@ -193,7 +194,11 @@ function CreateBookingForm({ newGuest, cabinToEdit = {}, onCloseModal }) {
           $size="medium"
           $variation="secondary"
           disabled={isPending}
-          onClick={() => onCloseModal?.()}
+          onClick={() => {
+            // remove guest data from cache
+            queryClient.removeQueries({ queryKey: ["guest"] });
+            onCloseModal?.();
+          }}
         >
           Cancel
         </Button>
