@@ -56,10 +56,11 @@ export async function updateUser({ password, fullName, avatar }) {
     };
   const { data, error } = await supabase.auth.updateUser(updateData);
   if (error) throw new Error(error.message);
+
   if (!avatar) return data;
 
   // 2. Upload the avatar image
-  const fileName = `avatar-${data.user.id}-${Math.random()}`;
+  const fileName = `avatar-${data.user.id}-${Math.random()}-${avatar.name}`;
   const { error: avatarError } = await supabase.storage
     .from("avatars")
     .upload(fileName, avatar);
